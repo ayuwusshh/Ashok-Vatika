@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-display: "Manrope", system-ui, sans-serif;
+  
+  --color-brand-primary: #00450d;
+  --color-brand-primary-light: #1b5e20;
+  --color-brand-primary-dark: #002203;
+  --color-brand-secondary: #286b33;
+  --color-brand-secondary-light: #abf4ac;
+  --color-brand-secondary-dark: #002107;
+  
+  --color-brand-background: #fbf9f8;
+  --color-brand-surface: #ffffff;
+  --color-brand-surface-dim: #dcd9d9;
+  
+  --color-brand-on-surface: #1b1c1c;
+  --color-brand-on-surface-variant: #41493e;
+  
+  --color-brand-error: #ba1a1a;
+  
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem; /* 20px for cards */
+  --radius-button: 1rem; /* 16px for buttons */
+  
+  --shadow-ambient: 0 4px 20px rgba(27, 94, 32, 0.05);
+}
+
+@layer base {
+  body {
+    @apply bg-brand-background text-brand-on-surface font-sans antialiased;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display text-brand-primary tracking-tight;
+  }
+}
