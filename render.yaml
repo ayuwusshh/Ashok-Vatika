@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: ashok-vatika-backend
+    env: node
+    plan: free
+    rootDir: Backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        sync: false
+      - key: CLERK_SECRET_KEY
+        sync: false
+      - key: CLERK_PUBLISHABLE_KEY
+        sync: false
+      - key: PERENUAL_API_KEY
+        sync: false
+      - key: REDIS_URL
+        sync: false

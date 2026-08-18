@@ -1,22 +1,32 @@
 const { createClient } = require('redis');
 
-let redisClient;
+let redisClient = null;
 
 const connectRedis = async () => {
-  redisClient = createClient({
-    url: process.env.REDIS_URL || 'redis://localhost:6379'
-  });
+  const redisUrl = process.env.REDIS_URL || (process.env.NODE_ENV === 'production' ? null : 'redis://localhost:6379');
 
-  redisClient.on('error', (err) => console.log('Redis Client Error', err));
-  redisClient.on('connect', () => console.log('Redis Connected'));
+  if (!redisUrl) {
+    console.log('Redis URL not configured; cache disabled');
+    return null;
+  }
 
-  await redisClient.connect();
+  const client = createClient({ url: redisUrl });
+
+  client.on('error', (err) => console.log('Redis Client Error', err.message));
+  client.on('connect', () => console.log('Redis Connected'));
+
+  try {
+    await client.connect();
+    redisClient = client;
+    return redisClient;
+  } catch (error) {
+    console.log('Redis connection failed; cache disabled:', error.message);
+    redisClient = null;
+    return null;
+  }
 };
 
 const getRedisClient = () => {
-  if (!redisClient) {
-    throw new Error('Redis client not initialized');
-  }
   return redisClient;
 };
 

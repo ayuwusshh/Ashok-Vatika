@@ -9,13 +9,20 @@ const searchPlants = async (query) => {
 
   try {
     // Check cache
-    const cachedData = await redisClient.get(cacheKey);
-    if (cachedData) {
-      return JSON.parse(cachedData);
+    if (redisClient) {
+      try {
+        const cachedData = await redisClient.get(cacheKey);
+        if (cachedData) {
+          return JSON.parse(cachedData);
+        }
+      } catch (cacheError) {
+        console.warn('Redis read failed; continuing without cache:', cacheError.message);
+      }
     }
 
     // Fetch from API
     const response = await axios.get(`${PERENUAL_BASE_URL}/species-list`, {
+      timeout: 10000,
       params: {
         key: process.env.PERENUAL_API_KEY,
         q: query,
@@ -34,7 +41,13 @@ const searchPlants = async (query) => {
     }));
 
     // Cache for 1 hour
-    await redisClient.setEx(cacheKey, 3600, JSON.stringify(formattedData));
+    if (redisClient) {
+      try {
+        await redisClient.setEx(cacheKey, 3600, JSON.stringify(formattedData));
+      } catch (cacheError) {
+        console.warn('Redis write failed:', cacheError.message);
+      }
+    }
 
     return formattedData;
   } catch (error) {
@@ -49,13 +62,20 @@ const getPlantDetails = async (id) => {
 
   try {
     // Check cache
-    const cachedData = await redisClient.get(cacheKey);
-    if (cachedData) {
-      return JSON.parse(cachedData);
+    if (redisClient) {
+      try {
+        const cachedData = await redisClient.get(cacheKey);
+        if (cachedData) {
+          return JSON.parse(cachedData);
+        }
+      } catch (cacheError) {
+        console.warn('Redis read failed; continuing without cache:', cacheError.message);
+      }
     }
 
     // Fetch from API
     const response = await axios.get(`${PERENUAL_BASE_URL}/species/details/${id}`, {
+      timeout: 10000,
       params: {
         key: process.env.PERENUAL_API_KEY,
       },
@@ -97,7 +117,13 @@ const getPlantDetails = async (id) => {
     });
 
     // Cache for 24 hours (Plant details rarely change)
-    await redisClient.setEx(cacheKey, 86400, JSON.stringify(formattedData));
+    if (redisClient) {
+      try {
+        await redisClient.setEx(cacheKey, 86400, JSON.stringify(formattedData));
+      } catch (cacheError) {
+        console.warn('Redis write failed:', cacheError.message);
+      }
+    }
 
     return formattedData;
   } catch (error) {
